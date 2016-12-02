@@ -29,8 +29,11 @@ class Client(object):
     def get_api(self, type_, id_):
         return API(self, type_, id_)
 
-    def get_image_search_api(self, image_set_id):
-        return ImageSearchAPI(self, image_set_id)
+    def get_image_search_api(self, id_):
+        return API(self, 'search', id_)
+
+    def get_image_set_api(self, image_set_id):
+        return ImageSetAPI(self, image_set_id)
 
     def post(self, api_url, data=None, files=None):
         headers = self.get_auth_headers(data)
@@ -73,18 +76,21 @@ class API(object):
         return '/'.join([API_URL, self.type_, self.id_])
 
 
-class ImageSearchAPI(API):
+class ImageSetAPI(API):
 
     def __init__(self, client, image_set_id):
-        super(ImageSearchAPI, self).__init__(
+        super(ImageSetAPI, self).__init__(
             client, 'image_sets', '_0000014'
         )
         self.image_set_id = image_set_id
 
+    def query(self, image, loc='0-0-1-1'):
+        raise NotImplementedError()
+
     @property
     def base_url(self):
         return '%s/%s' % (
-            super(ImageSearchAPI, self).base_url,
+            super(ImageSetAPI, self).base_url,
             self.image_set_id
         )
 

@@ -22,7 +22,7 @@ ProductAI SDK for Python
     from productai import Client
 
     cli = Client(access_key_id, access_key_secret)
-    api = cli.get_image_search_api(image_set_id)
+    api = cli.get_image_set_api(image_set_id)
     resp = api.add_image(url, meta)
 
 
@@ -34,7 +34,7 @@ ProductAI SDK for Python
     from productai import Client
 
     cli = Client(access_key_id, access_key_secret)
-    api = cli.get_image_search_api(image_set_id)
+    api = cli.get_image_set_api(image_set_id)
     with open("images.csv") as f:
         resp = api.delete_images(f)
 
@@ -47,7 +47,7 @@ ProductAI SDK for Python
     from productai import Client
 
     cli = Client(access_key_id, access_key_secret)
-    api = cli.get_image_search_api(image_set_id)
+    api = cli.get_image_search_api(service_id)
     resp = api.query(image_url)
 
 
