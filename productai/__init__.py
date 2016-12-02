@@ -7,6 +7,7 @@ import random
 
 import six
 import requests
+from requests.adapters import HTTPAdapter
 
 __all__ = ['Client']
 
@@ -18,9 +19,12 @@ API_VERSION = '1'
 
 class Client(object):
 
-    def __init__(self, access_key_id, access_key_secret):
+    def __init__(self, access_key_id, access_key_secret, session=None):
         self.access_key_id = access_key_id
         self.access_key_secret = access_key_secret
+        if not session:
+            session = get_default_session()
+        self.session = session
 
     def get_api(self, type_, id_):
         return API(self, type_, id_)
@@ -30,7 +34,7 @@ class Client(object):
 
     def post(self, api_url, data=None, files=None):
         headers = self.get_auth_headers(data)
-        resp = requests.post(
+        resp = self.session.post(
             api_url,
             data=data,
             headers=headers,
@@ -142,3 +146,17 @@ def to_bytes(v):
             v = unicode(v)
         v = v.encode('utf8')
     return v
+
+
+def get_default_session():
+    s = requests.Session()
+    # remount http and https adapters to config max_retries
+    adapter = HTTPAdapter(
+        max_retries=3,
+        pool_connections=5,
+        pool_maxsize=50,
+        pool_block=True,
+    )
+    s.mount('http://', adapter)
+    s.mount('https://', adapter)
+    return s
