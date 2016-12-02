@@ -4,7 +4,7 @@ setup(
     name='productai',
     version='0.0.1',
     url='https://github.com/MalongTech/productai-python-sdk',
-    install_requires=['requests>=2.12.1'],
+    install_requires=['requests>=2.12.1', 'six>=1.10.0'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

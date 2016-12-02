@@ -5,6 +5,7 @@ import hashlib
 import string
 import random
 
+import six
 import requests
 
 __all__ = ['Client']
@@ -28,21 +29,24 @@ class Client(object):
         return ImageSearchAPI(self, image_set_id)
 
     def post(self, api_url, data=None, files=None):
+        headers = self.get_auth_headers(data)
+        resp = requests.post(
+            api_url,
+            data=data,
+            headers=headers,
+            files=files,
+            timeout=30,
+        )
+        return resp
+
+    def get_auth_headers(self, data):
         headers = make_auth_headers(self.access_key_id, 'POST')
         headers['x-ca-signature'] = calc_signature(
             headers,
             data,
             self.access_key_secret
         )
-        resp = requests.post(
-            api_url,
-            data=data,
-            headers=headers,
-            files=files,
-            verify=False,
-            timeout=30,
-        )
-        return resp
+        return headers
 
 
 class API(object):
@@ -107,6 +111,17 @@ def make_auth_headers(access_key_id, method='POST'):
 
 
 def calc_signature(headers, form, secret_key):
+    secret_key = to_bytes(secret_key)
+    payload = get_payload_as_str(headers, form)
+    signature = hmac.new(
+        secret_key,
+        payload,
+        hashlib.sha1
+    )
+    return base64.b64encode(signature.digest())
+
+
+def get_payload_as_str(headers, form):
     payload = dict(headers)
 
     if form:
@@ -114,17 +129,16 @@ def calc_signature(headers, form, secret_key):
 
     sort_value = []
     for k in sorted(payload):
-        v = payload.get(k, '')
-        if not isinstance(v, basestring):
-            v = str(v)
+        v = to_bytes(payload.get(k, ''))
         v = v.strip()
-        value = '%s=%s' % (k, v)
-        sort_value.append(value)
+        sort_value.append(b'%s=%s' % (to_bytes(k), v))
 
-    string_to_signature = '&'.join(sort_value)
-    signature = hmac.new(
-        secret_key,
-        string_to_signature,
-        hashlib.sha1
-    )
-    return base64.b64encode(signature.digest())
+    return b'&'.join(sort_value)
+
+
+def to_bytes(v):
+    if not isinstance(v, six.binary_type):
+        if six.PY2:
+            v = unicode(v)
+        v = v.encode('utf8')
+    return v
