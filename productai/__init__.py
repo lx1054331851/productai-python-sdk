@@ -64,12 +64,15 @@ class API(object):
         self.id_ = id_
 
     def query(self, image, loc='0-0-1-1'):
-        # TODO add support for uploading image file
         data = {
-            'url': image,
             'loc': loc
         }
-        return self.client.post(self.base_url, data=data)
+        files = None
+        if isinstance(image, six.string_types):
+            data['url'] = image
+        elif hasattr(image, 'read'):
+            files = {'search': image}
+        return self.client.post(self.base_url, data=data, files=files)
 
     @property
     def base_url(self):
