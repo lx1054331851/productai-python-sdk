@@ -7,6 +7,9 @@ ProductAI SDK for Python
 .. image:: https://badge.fury.io/py/productai.svg
     :target: https://badge.fury.io/py/productai
 
+.. image:: https://img.shields.io/scrutinizer/g/Malongtech/productai-python-sdk.svg
+    :target: https://scrutinizer-ci.com/g/MalongTech/productai-python-sdk/?branch=master
+
 安装
 ----
 
