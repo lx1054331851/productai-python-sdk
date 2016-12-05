@@ -51,7 +51,14 @@ ProductAI SDK for Python
 
     cli = Client(access_key_id, access_key_secret)
     api = cli.get_image_search_api(service_id)
+
+    # 用图片URL查询
     resp = api.query(image_url)
+
+    # 或者直接上传本地图片查询
+    with open("fashion.jpg") as f_image:
+        resp = api.query(f_image)
+
 
 
 使用其他服务
