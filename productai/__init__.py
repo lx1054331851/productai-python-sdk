@@ -63,9 +63,10 @@ class API(object):
         self.type_ = type_
         self.id_ = id_
 
-    def query(self, image, loc='0-0-1-1'):
+    def query(self, image, loc='0-0-1-1', count=20):
         data = {
-            'loc': loc
+            'loc': loc,
+            'count': count,
         }
         files = None
         if isinstance(image, six.string_types):

@@ -62,6 +62,9 @@ ProductAI SDK for Python
     with open("fashion.jpg") as f_image:
         resp = api.query(f_image)
 
+    # 指定查询结果数量上限，默认为 20
+    resp = api.query(image_url, count=10)
+
 
 
 使用其他服务
