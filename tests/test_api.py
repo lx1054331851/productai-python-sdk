@@ -12,7 +12,7 @@ class TestQuery:
 
         api.client.post.assert_called_with(
             api.base_url,
-            data={'loc': '0-0-1-1'},
+            data={'loc': '0-0-1-1', 'count': 20},
             files={'search': f}
         )
 
@@ -24,6 +24,6 @@ class TestQuery:
 
         api.client.post.assert_called_with(
             api.base_url,
-            data={'loc': '0-0-1-1', 'url': image},
+            data={'loc': '0-0-1-1', 'url': image, 'count': 20},
             files=None,
         )
