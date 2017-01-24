@@ -113,8 +113,8 @@ class ImageSetAPI(API):
             files = {'urls_to_delete': f}
         return self.client.post(self.base_url, files=files)
 
-    def add_image(self, image_url, meta=None):
-        form = {'image_url': image_url, 'meta': meta}
+    def add_image(self, image_url, meta=None, tags=''):
+        form = {'image_url': image_url, 'meta': meta, 'tags': tags}
         return self.client.post(self.base_url, data=form)
 
     def delete_images(self, f_urls_to_delete):
