@@ -1,9 +1,13 @@
+#-*- coding=utf8 -*-
+import csv
+import tempfile
 import time
 import hmac
 import base64
 import hashlib
 import string
 import random
+from contextlib import contextmanager
 
 import six
 import requests
@@ -98,6 +102,17 @@ class ImageSetAPI(API):
             self.image_set_id
         )
 
+    def add_images_in_bulk(self, img_infos):
+        '''批量添加图片'''
+        with _normalize_images_file(img_infos) as f:
+            files = {'urls_to_add': f}
+        return self.client.post(self.base_url, files=files)
+
+    def delete_images_in_bulk(self, img_infos):
+        with _normalize_images_file(img_infos) as f:
+            files = {'urls_to_delete': f}
+        return self.client.post(self.base_url, files=files)
+
     def add_image(self, image_url, meta=None):
         form = {'image_url': image_url, 'meta': meta}
         return self.client.post(self.base_url, data=form)
@@ -170,3 +185,19 @@ def get_default_session():
     s.mount('http://', adapter)
     s.mount('https://', adapter)
     return s
+
+
+@contextmanager
+def _normalize_images_file(x, tmpdir=None):
+    if isinstance(x, six.string_types):
+        with open(x) as f:
+            yield f
+    elif isinstance(x, list):
+        with tempfile.NamedTemporaryFile(mode='w', dir=tmpdir) as tf:
+            writer = csv.writer(tf)
+            writer.writerows(x)
+            tf.flush()
+            with open(tf.name) as f:
+                yield f
+    else:
+        yield x
