@@ -30,7 +30,20 @@ ProductAI SDK for Python
 
     cli = Client(access_key_id, access_key_secret)
     api = cli.get_image_set_api(image_set_id)
-    resp = api.add_image(url, meta)
+    resp = api.add_image(url, meta, tags='卡通|四方')
+
+
+批量添加图片到图集
+~~~
+
+.. code-block:: python
+
+    from productai import Client
+
+    cli = Client(access_key_id, access_key_secret)
+    api = cli.get_image_set_api(image_set_id)
+    with open('images.csv') as f:
+        res = api.add_images_in_bulk(f)
 
 
 删除图集中的图片
@@ -43,7 +56,20 @@ ProductAI SDK for Python
     cli = Client(access_key_id, access_key_secret)
     api = cli.get_image_set_api(image_set_id)
     with open("images.csv") as f:
-        resp = api.delete_images(f)
+        resp = api.delete_images_in_bulk(f)
+
+
+删除图集中的图片
+~~~~~~~
+
+.. code-block:: python
+
+    from productai import Client
+
+    cli = Client(access_key_id, access_key_secret)
+    api = cli.get_image_set_api(image_set_id)
+    with open("images.csv") as f:
+        resp = api.delete_images_in_bulk(f)
 
 
 搜索图片
