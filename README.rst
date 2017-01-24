@@ -34,7 +34,7 @@ ProductAI SDK for Python
 
 
 批量添加图片到图集
-~~~
+~~~~~~~
 
 .. code-block:: python
 
