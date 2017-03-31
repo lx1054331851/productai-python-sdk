@@ -1,4 +1,5 @@
 #-*- coding=utf8 -*-
+import os
 import csv
 import tempfile
 import time
@@ -17,7 +18,7 @@ __all__ = ['Client']
 
 
 SIGNATURE_LEN = 32
-API_URL = 'https://api.productai.cn'
+API_URL = os.environ.get('PRODUCTAI_API_URL', 'https://api.productai.cn')
 API_VERSION = '1'
 
 
