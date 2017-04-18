@@ -21,12 +21,16 @@ class TestGetPayloadAsStr:
 
     def test_payloads_should_be_ordered_by_name(self):
         headers = {'x-ca-version': '1.0'}
-        form = {'image_url': 'http://httpbin.org/image', 'meta': '头像'}
+        form = {
+            'image_url': 'http://httpbin.org/image',
+            'meta': '头像',
+            'limit': 3
+        }
         res = m.get_payload_as_str(headers, form)
         if six.PY2:
-            assert res == u'image_url=http://httpbin.org/image&meta=头像&x-ca-version=1.0'.encode('utf8')
+            assert res == u'image_url=http://httpbin.org/image&limit=3&meta=头像&x-ca-version=1.0'.encode('utf8')
         else:
-            assert res == 'image_url=http://httpbin.org/image&meta=头像&x-ca-version=1.0'.encode('utf8')
+            assert res == 'image_url=http://httpbin.org/image&limit=3&meta=头像&x-ca-version=1.0'.encode('utf8')
 
 
 def test_calc_signature(mocker):

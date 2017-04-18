@@ -168,6 +168,8 @@ def get_payload_as_str(headers, form):
 
 def to_bytes(v):
     if not isinstance(v, six.binary_type):
+        if not isinstance(v, six.string_types):
+            v = str(v)
         if six.PY2:
             v = unicode(v)
         v = v.encode('utf8')
