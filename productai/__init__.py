@@ -1,4 +1,4 @@
-#-*- coding=utf8 -*-
+# -*- coding=utf8 -*-
 import os
 import csv
 import tempfile
@@ -37,8 +37,20 @@ class Client(object):
     def get_image_search_api(self, id_):
         return API(self, 'search', id_)
 
+    def get_batch_api(self):
+        return BatchAPI(self)
+
     def get_image_set_api(self, image_set_id):
         return ImageSetAPI(self, image_set_id)
+
+    def get(self, api_url):
+        headers = self.get_auth_headers({})
+        resp = self.session.get(
+            api_url,
+            headers=headers,
+            timeout=30,
+        )
+        return resp
 
     def post(self, api_url, data=None, files=None):
         headers = self.get_auth_headers(data)
@@ -83,6 +95,64 @@ class API(object):
     @property
     def base_url(self):
         return '/'.join([API_URL, self.type_, self.id_])
+
+
+class BatchAPI(API):
+
+    def __init__(self, client):
+        self.client = client
+        self.type_ = 'batch'
+        self.id_ = '_1000001'
+
+    def query(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def prepare(self, service_id, images_infos):
+        endpoint = self.base_url + '/task/prepare'
+        with tempfile.NamedTemporaryFile() as tf:
+            writer = csv.writer(tf)
+            writer.writerows(images_infos)
+            tf.flush()
+            tf.seek(0)
+            resp = self.client.post(
+                endpoint,
+                data={'service_id': service_id},
+                files={'urls': tf},
+            )
+            if not resp.ok:
+                resp.raise_for_status()
+            return resp.json()
+
+    def apply(self, task_id):
+        endpoint = self.base_url + '/task/apply'
+        resp = self.client.post(
+            endpoint,
+            data={'task_id': task_id},
+        )
+        if not resp.ok:
+            resp.raise_for_status()
+        return resp.json()
+
+    def get_task_info(self, task_id):
+        endpoint = self.base_url + '/task/info/%s' % task_id
+        resp = self.client.get(endpoint)
+        if not resp.ok:
+            resp.raise_for_status()
+        return resp.json()
+
+    def revoke(self, task_id):
+        endpoint = self.base_url + '/task/revoke/%s' % task_id
+        resp = self.client.post(endpoint)
+        if not resp.ok:
+            resp.raise_for_status()
+        return resp.json()
+
+    def get_tasks(self):
+        endpoint = self.base_url + '/tasks'
+        resp = self.client.get(endpoint)
+        if not resp.ok:
+            resp.raise_for_status()
+        return resp.json()
 
 
 class ImageSetAPI(API):
