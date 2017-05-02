@@ -8,6 +8,7 @@ import base64
 import hashlib
 import string
 import random
+import datetime as dt
 from contextlib import contextmanager
 
 import six
@@ -43,12 +44,13 @@ class Client(object):
     def get_image_set_api(self, image_set_id):
         return ImageSetAPI(self, image_set_id)
 
-    def get(self, api_url):
-        headers = self.get_auth_headers({})
+    def get(self, api_url, **kwargs):
+        headers = self.get_auth_headers(kwargs.get('params'))
         resp = self.session.get(
             api_url,
             headers=headers,
             timeout=30,
+            **kwargs
         )
         return resp
 
@@ -147,9 +149,14 @@ class BatchAPI(API):
             resp.raise_for_status()
         return resp.json()
 
-    def get_tasks(self):
+    def get_tasks(self, start=None, end=None):
         endpoint = self.base_url + '/tasks'
-        resp = self.client.get(endpoint)
+        params = {}
+        if start is not None:
+            params['start'] = date_str(start)
+        if end is not None:
+            params['end'] = date_str(start)
+        resp = self.client.get(endpoint, params=params)
         if not resp.ok:
             resp.raise_for_status()
         return resp.json()
@@ -274,3 +281,14 @@ def _normalize_images_file(x, tmpdir=None):
                 yield f
     else:
         yield x
+
+
+def date_str(d):
+    date_format = "%Y-%m-%d"
+    if isinstance(d, six.string_types):
+        dt.datetime.strptime(d, date_format)  # format check
+        return d
+    elif isinstance(d, (dt.date, dt.datetime)):
+        return d.strftime('%Y-%m-%d')
+    else:
+        raise TypeError("Invalid date %r" % d)

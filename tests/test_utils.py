@@ -1,5 +1,8 @@
 # -*- coding:utf-8 -*-
+import datetime as dt
+
 import six
+import pytest
 
 import productai as m
 
@@ -45,3 +48,11 @@ def test_calc_signature(mocker):
         m.calc_signature(headers, form, 'secret'),
         six.binary_type
     )
+
+
+def test_date_str():
+    d = dt.date(2015, 1, 11)
+    assert m.date_str(d) == '2015-01-11'
+    with pytest.raises(ValueError):
+        m.date_str('asdfasdf')
+    assert m.date_str(dt.datetime(2017, 2, 10)) == '2017-02-10'
