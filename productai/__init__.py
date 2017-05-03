@@ -158,7 +158,7 @@ class BatchAPI(API):
         if start is not None:
             params['start'] = date_str(start)
         if end is not None:
-            params['end'] = date_str(start)
+            params['end'] = date_str(end)
         resp = self.client.get(endpoint, params=params)
         if not resp.ok:
             resp.raise_for_status()
