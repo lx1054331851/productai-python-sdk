@@ -109,21 +109,24 @@ class BatchAPI(API):
     def query(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def prepare(self, service_id, images_infos):
+    def prepare_by_file(self, service_id, tf):
         endpoint = self.base_url + '/task/prepare'
+        resp = self.client.post(
+            endpoint,
+            data={'service_id': service_id},
+            files={'urls': tf},
+        )
+        if not resp.ok:
+            resp.raise_for_status()
+        return resp.json()
+
+    def prepare(self, service_id, images_infos):
         with tempfile.NamedTemporaryFile() as tf:
             writer = csv.writer(tf)
             writer.writerows(images_infos)
             tf.flush()
             tf.seek(0)
-            resp = self.client.post(
-                endpoint,
-                data={'service_id': service_id},
-                files={'urls': tf},
-            )
-            if not resp.ok:
-                resp.raise_for_status()
-            return resp.json()
+            return self.prepare_by_file(service_id, tf)
 
     def apply(self, task_id):
         endpoint = self.base_url + '/task/apply'
