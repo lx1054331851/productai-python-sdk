@@ -45,7 +45,7 @@ class Client(object):
         return ImageSetAPI(self, image_set_id)
 
     def get(self, api_url, **kwargs):
-        headers = self.get_auth_headers(kwargs.get('params'))
+        headers = self.get_headers(kwargs.get('params'))
         resp = self.session.get(
             api_url,
             headers=headers,
@@ -55,7 +55,7 @@ class Client(object):
         return resp
 
     def post(self, api_url, data=None, files=None):
-        headers = self.get_auth_headers(data)
+        headers = self.get_headers(data)
         resp = self.session.post(
             api_url,
             data=data,
@@ -72,6 +72,15 @@ class Client(object):
             data,
             self.access_key_secret
         )
+        return headers
+
+    def set_lang(self, lang):
+        self.lang = lang
+
+    def get_headers(self, data):
+        headers = self.get_auth_headers(data)
+        if self.lang:
+            headers['Accept-Language'] = self.lang
         return headers
 
 
@@ -160,6 +169,13 @@ class BatchAPI(API):
         if end is not None:
             params['end'] = date_str(end)
         resp = self.client.get(endpoint, params=params)
+        if not resp.ok:
+            resp.raise_for_status()
+        return resp.json()
+
+    def get_services(self):
+        endpoint = self.base_url + '/services'
+        resp = self.client.get(endpoint)
         if not resp.ok:
             resp.raise_for_status()
         return resp.json()
