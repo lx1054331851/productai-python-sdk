@@ -304,11 +304,11 @@ def _normalize_images_file(x, tmpdir=None):
 
 
 def date_str(d):
-    date_format = "%Y-%m-%d"
+    date_format = "%Y-%m-%dT%H:%M:%SZ"
     if isinstance(d, six.string_types):
         dt.datetime.strptime(d, date_format)  # format check
         return d
     elif isinstance(d, (dt.date, dt.datetime)):
-        return d.strftime('%Y-%m-%d')
+        return d.strftime(date_format)
     else:
         raise TypeError("Invalid date %r" % d)
