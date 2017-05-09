@@ -31,7 +31,7 @@ class Client(object):
         if not session:
             session = get_default_session()
         self.session = session
-        self.lang = None
+        self.lang = 'en-us'
 
     def get_api(self, type_, id_):
         return API(self, type_, id_)
