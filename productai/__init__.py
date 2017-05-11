@@ -121,14 +121,11 @@ class BatchAPI(API):
 
     def prepare_by_file(self, service_id, tf):
         endpoint = self.base_url + '/task/prepare'
-        resp = self.client.post(
+        return self.client.post(
             endpoint,
             data={'service_id': service_id},
             files={'urls': tf},
         )
-        if not resp.ok:
-            resp.raise_for_status()
-        return resp.json()
 
     def prepare(self, service_id, images_infos):
         with tempfile.NamedTemporaryFile() as tf:
@@ -140,27 +137,18 @@ class BatchAPI(API):
 
     def apply(self, task_id):
         endpoint = self.base_url + '/task/apply'
-        resp = self.client.post(
+        return self.client.post(
             endpoint,
             data={'task_id': task_id},
         )
-        if not resp.ok:
-            resp.raise_for_status()
-        return resp.json()
 
     def get_task_info(self, task_id):
         endpoint = self.base_url + '/task/info/%s' % task_id
-        resp = self.client.get(endpoint)
-        if not resp.ok:
-            resp.raise_for_status()
-        return resp.json()
+        return self.client.get(endpoint)
 
     def revoke(self, task_id):
         endpoint = self.base_url + '/task/revoke/%s' % task_id
-        resp = self.client.post(endpoint)
-        if not resp.ok:
-            resp.raise_for_status()
-        return resp.json()
+        return self.client.post(endpoint)
 
     def get_tasks(self, start=None, end=None):
         endpoint = self.base_url + '/tasks'
@@ -169,17 +157,11 @@ class BatchAPI(API):
             params['start'] = date_str(start)
         if end is not None:
             params['end'] = date_str(end)
-        resp = self.client.get(endpoint, params=params)
-        if not resp.ok:
-            resp.raise_for_status()
-        return resp.json()
+        return self.client.get(endpoint, params=params)
 
     def get_services(self):
         endpoint = self.base_url + '/services'
-        resp = self.client.get(endpoint)
-        if not resp.ok:
-            resp.raise_for_status()
-        return resp.json()
+        return self.client.get(endpoint)
 
 
 class ImageSetAPI(API):
