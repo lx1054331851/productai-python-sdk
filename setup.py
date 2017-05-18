@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='productai',
-    version='0.2.6',
+    version='0.3.0',
     url='https://github.com/MalongTech/productai-python-sdk',
     install_requires=['requests>=2.12.1', 'six>=1.10.0'],
     classifiers=[
