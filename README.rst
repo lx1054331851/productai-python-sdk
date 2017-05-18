@@ -80,8 +80,14 @@ Search images
         resp = api.query(f_image)
 
     # Specifies the maximum number of results, defaults is 20
-    # Specifies the result containing 'MALE' tag
-    resp = api.query(image_url, count=10, tags=['MALE'])
+    # Specifies the result containing 'MALE' and 'SHOES' tags
+    resp = api.query(image_url, count=10, tags=['MALE', 'SHOES'])
+
+    # use string as tag search. "|" equals to "and"
+    resp = api.query(image_url, count=10, tags='MALE|SHOES')
+
+    # use the complex form of tag search
+    resp = api.query(image_url, count=10, tags={'or': ['MALE', 'SHOES', {'or': ['TMALL', 'TAOBAO']}]})
 
 
 
@@ -163,8 +169,14 @@ Use other service
         resp = api.query(f_image)
 
     # 指定查询结果数量上限，默认为 20
-    # 指定查询结果必须有MALE标签
-    resp = api.query(image_url, count=10, tags=['MALE'])
+    # 指定查询结果必须有MALE和SHOES标签
+    resp = api.query(image_url, count=10, tags=['MALE', 'SHOES'])
+
+    # 也可以按如下方式创建标签搜索，"|"等价于"and"操作符
+    resp = api.query(image_url, count=10, tags='MALE|SHOES')
+
+    # 或者使用复杂标签搜索
+    resp = api.query(image_url, count=10, tags={'or': ['MALE', 'SHOES', {'or': ['TMALL', 'TAOBAO']}]})
 
 
 
