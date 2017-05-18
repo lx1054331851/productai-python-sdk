@@ -8,6 +8,7 @@ import base64
 import hashlib
 import string
 import random
+import json
 import datetime as dt
 from contextlib import contextmanager
 
@@ -92,16 +93,26 @@ class API(object):
         self.type_ = type_
         self.id_ = id_
 
-    def query(self, image, loc='0-0-1-1', count=20):
+    def query(self, image, loc='0-0-1-1', count=20, tags=None):
         data = {
             'loc': loc,
             'count': count,
         }
+
+        if tags:
+            if isinstance(tags, six.string_types):
+                data['tags'] = tags
+            elif isinstance(tags, list):
+                data['tags'] = '|'.join(tags)
+            elif isinstance(tags, dict):
+                data['tags'] = json.dumps(tags)
+
         files = None
         if isinstance(image, six.string_types):
             data['url'] = image
         elif hasattr(image, 'read'):
             files = {'search': image}
+
         return self.client.post(self.base_url, data=data, files=files)
 
     @property
@@ -172,7 +183,7 @@ class ImageSetAPI(API):
         )
         self.image_set_id = image_set_id
 
-    def query(self, image, loc='0-0-1-1'):
+    def query(self, *args, **kwargs):
         raise NotImplementedError()
 
     @property

@@ -80,7 +80,8 @@ Search images
         resp = api.query(f_image)
 
     # Specifies the maximum number of results, defaults is 20
-    resp = api.query(image_url, count=10)
+    # Specifies the result containing 'MALE' tag
+    resp = api.query(image_url, count=10, tags=['MALE'])
 
 
 
@@ -162,7 +163,8 @@ Use other service
         resp = api.query(f_image)
 
     # 指定查询结果数量上限，默认为 20
-    resp = api.query(image_url, count=10)
+    # 指定查询结果必须有MALE标签
+    resp = api.query(image_url, count=10, tags=['MALE'])
 
 
 

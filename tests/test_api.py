@@ -1,4 +1,5 @@
 import csv
+import json
 
 import productai as m
 
@@ -28,6 +29,68 @@ class TestQuery:
             api.base_url,
             data={'loc': '0-0-1-1', 'url': image, 'count': 20},
             files=None,
+        )
+
+    def test_search_by_tag(self, mocker):
+        url = 'http://httpbin.org/image'
+        api = m.API(mocker.Mock(), 'search', '******')
+
+        api.query(url, tags=None)
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20},
+            files=None
+        )
+
+        api.query(url, tags='1')
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'tags': '1'},
+            files=None
+        )
+
+        api.query(url, tags='1|2')
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'tags': '1|2'},
+            files=None
+        )
+
+        api.query(url, tags=['1'])
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'tags': '1'},
+            files=None
+        )
+
+        api.query(url, tags=['1', '2', '3'])
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'tags': '1|2|3'},
+            files=None
+        )
+
+        expected = {'or': ['1', '2']}
+        api.query(url, tags=expected)
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'tags': json.dumps(expected)},
+            files=None
+        )
+
+        expected = {
+            'or': [
+                '1',
+                '2',
+                {'and': ['3', '4']},
+                {'or': ['5', {'and': ['7', '8']}]}
+            ]
+        }
+        api.query(url, tags=expected)
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'tags': json.dumps(expected)},
+            files=None
         )
 
 
