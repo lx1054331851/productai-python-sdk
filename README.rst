@@ -87,7 +87,7 @@ Search images
     resp = api.query(image_url, count=10, tags='MALE|SHOES')
 
     # use the complex form of tag search
-    resp = api.query(image_url, count=10, tags={'or': ['MALE', 'SHOES', {'or': ['TMALL', 'TAOBAO']}]})
+    resp = api.query(image_url, count=10, tags={'and': ['MALE', 'SHOES', {'or': ['TMALL', 'TAOBAO']}]})
 
 
 
@@ -176,7 +176,7 @@ Use other service
     resp = api.query(image_url, count=10, tags='MALE|SHOES')
 
     # 或者使用复杂标签搜索
-    resp = api.query(image_url, count=10, tags={'or': ['MALE', 'SHOES', {'or': ['TMALL', 'TAOBAO']}]})
+    resp = api.query(image_url, count=10, tags={'and': ['MALE', 'SHOES', {'or': ['TMALL', 'TAOBAO']}]})
 
 
 
