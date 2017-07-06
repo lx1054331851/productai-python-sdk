@@ -46,6 +46,9 @@ class Client(object):
     def get_image_set_api(self, image_set_id):
         return ImageSetAPI(self, image_set_id)
 
+    def get_color_analysis_api(self, sub_type):
+        return ColorAnalysisAPI(self, sub_type)
+
     def get(self, api_url, **kwargs):
         headers = self.get_headers(kwargs.get('params'))
         resp = self.session.get(
@@ -118,6 +121,53 @@ class API(object):
     @property
     def base_url(self):
         return '/'.join([API_URL, self.type_, self.id_])
+
+
+class ColorAnalysisAPI(API):
+    SUBTYPE_SERVICE_IDS = {
+        'everything': '_0000072',
+        'foreground': '_0000073',
+        'person_outfit': '_0000074',
+    }
+    GRANULARITIES = ['major', 'detailed', 'dominant']
+    RETURN_TYPES = ['basic', 'w3c', 'ncs', 'cncs']
+
+    def __init__(self, client, sub_type):
+        try:
+            service_id = self.SUBTYPE_SERVICE_IDS[sub_type]
+        except KeyError:
+            raise TypeError(
+                "%r is not one of the valid subtypes: %r" %
+                (sub_type, list(self.SUBTYPE_SERVICE_IDS))
+            )
+        super(ColorAnalysisAPI, self).__init__(
+            client, 'color', service_id)
+        self.sub_type = sub_type
+
+    def query(self, image, granularity, return_type, loc='0-0-1-1'):
+        if granularity not in self.GRANULARITIES:
+            raise TypeError(
+                "%r is not one of the valid granularities: %r" %
+                (granularity, self.GRANULARITIES)
+            )
+        if return_type not in self.RETURN_TYPES:
+            raise TypeError(
+                "%r is not one of the valid return types: %r" %
+                (return_type, self.RETURN_TYPES)
+            )
+        data = {
+            'loc': loc,
+            'granularity': granularity,
+            'return_type': return_type,
+        }
+
+        files = None
+        if isinstance(image, six.string_types):
+            data['url'] = image
+        elif hasattr(image, 'read'):
+            files = {'image': image}
+
+        return self.client.post(self.base_url, data=data, files=files)
 
 
 class BatchAPI(API):
@@ -270,7 +320,7 @@ def get_default_session():
     s = requests.Session()
     # remount http and https adapters to config max_retries
     adapter = HTTPAdapter(
-        max_retries=3,
+        max_retries=0,
         pool_connections=5,
         pool_maxsize=50,
         pool_block=True,
