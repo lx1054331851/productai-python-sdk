@@ -18,14 +18,12 @@ from requests.adapters import HTTPAdapter
 
 __all__ = ['Client']
 
-
 SIGNATURE_LEN = 32
 API_URL = os.environ.get('PRODUCTAI_API_URL', 'https://api.productai.cn')
 API_VERSION = '1'
 
 
 class Client(object):
-
     def __init__(self, access_key_id, access_key_secret, session=None):
         self.access_key_id = access_key_id
         self.access_key_secret = access_key_secret
@@ -87,13 +85,12 @@ class Client(object):
 
 
 class API(object):
-
     def __init__(self, client, type_, id_):
         self.client = client
         self.type_ = type_
         self.id_ = id_
 
-    def query(self, image, loc='0-0-1-1', count=20, tags=None):
+    def query(self, image, loc='0-0-1-1', count=20, tags=None, options=None):
         data = {
             'loc': loc,
             'count': count,
@@ -113,6 +110,12 @@ class API(object):
         elif hasattr(image, 'read'):
             files = {'search': image}
 
+        if options:
+            bad_keys = [k for k in ['url', 'search', 'loc', 'count', 'tags'] if k in options]
+            if len(bad_keys) > 0:
+                raise ValueError('The keys %r are conflicted with built-in parameters.' % bad_keys)
+            data.update(options)
+
         return self.client.post(self.base_url, data=data, files=files)
 
     @property
@@ -121,7 +124,6 @@ class API(object):
 
 
 class BatchAPI(API):
-
     def __init__(self, client):
         self.client = client
         self.type_ = 'batch'
@@ -176,7 +178,6 @@ class BatchAPI(API):
 
 
 class ImageSetAPI(API):
-
     def __init__(self, client, image_set_id):
         super(ImageSetAPI, self).__init__(
             client, 'image_sets', '_0000014'
