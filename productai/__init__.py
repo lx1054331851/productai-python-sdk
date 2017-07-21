@@ -90,7 +90,7 @@ class API(object):
         self.type_ = type_
         self.id_ = id_
 
-    def query(self, image, loc='0-0-1-1', count=20, tags=None, options=None):
+    def query(self, image, loc='0-0-1-1', count=20, tags=None, **kwargs):
         data = {
             'loc': loc,
             'count': count,
@@ -110,11 +110,11 @@ class API(object):
         elif hasattr(image, 'read'):
             files = {'search': image}
 
-        if options:
-            bad_keys = [k for k in ['url', 'search', 'loc', 'count', 'tags'] if k in options]
+        if kwargs:
+            bad_keys = [k for k in ['url', 'search'] if k in kwargs]
             if len(bad_keys) > 0:
                 raise ValueError('The keys %r are conflicted with built-in parameters.' % bad_keys)
-            data.update(options)
+            data.update(kwargs)
 
         return self.client.post(self.base_url, data=data, files=files)
 

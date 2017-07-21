@@ -42,14 +42,7 @@ class TestQuery:
             files=None
         )
 
-        api.query(url, options=None)
-        api.client.post.assert_called_with(
-            api.base_url,
-            data={'loc': '0-0-1-1', 'url': url, 'count': 20},
-            files=None
-        )
-
-        api.query(url, options={'abc': 123})
+        api.query(url, abc=123)
         api.client.post.assert_called_with(
             api.base_url,
             data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'abc': 123},
@@ -57,8 +50,8 @@ class TestQuery:
         )
 
         with pytest.raises(ValueError) as val_err:
-            api.query(url, options={'url': 123})
-        assert str(val_err.value) == "The keys ['url'] are conflicted with built-in parameters."
+            api.query(url, search='123')
+        assert str(val_err.value) == "The keys ['search'] are conflicted with built-in parameters."
 
     def test_search_by_tag(self, mocker):
         url = 'http://httpbin.org/image'
