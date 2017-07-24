@@ -1,11 +1,11 @@
 import csv
 import json
+import pytest
 
 import productai as m
 
 
 class TestQuery:
-
     def test_should_upload_file_like_obj(self, mocker):
         api = m.API(mocker.Mock(), 'classify_fashion', '_0000001')
         f = mocker.Mock()
@@ -30,6 +30,28 @@ class TestQuery:
             data={'loc': '0-0-1-1', 'url': image, 'count': 20},
             files=None,
         )
+
+    def test_search_with_option(self, mocker):
+        url = 'http://httpbin.org/image'
+        api = m.API(mocker.Mock(), 'search', '******')
+
+        api.query(url)
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20},
+            files=None
+        )
+
+        api.query(url, abc=123)
+        api.client.post.assert_called_with(
+            api.base_url,
+            data={'loc': '0-0-1-1', 'url': url, 'count': 20, 'abc': 123},
+            files=None
+        )
+
+        with pytest.raises(ValueError) as val_err:
+            api.query(url, search='123')
+        assert str(val_err.value) == "The keys ['search'] are conflicted with built-in parameters."
 
     def test_search_by_tag(self, mocker):
         url = 'http://httpbin.org/image'
@@ -95,7 +117,6 @@ class TestQuery:
 
 
 class TestNormalizeImagesFile:
-
     def test_should_accept_file_name(self, tmpdir):
         csv_row = "http://x.com/a.jpg,12,good"
         f = tmpdir.mkdir('images').join('bulk1.csv')
