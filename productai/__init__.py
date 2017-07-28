@@ -64,7 +64,7 @@ class Client(object):
             data=data,
             headers=headers,
             files=files,
-            timeout,
+            timeout=timeout
         )
         return resp
 
