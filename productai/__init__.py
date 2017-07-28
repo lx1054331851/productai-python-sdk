@@ -188,6 +188,7 @@ class BatchAPI(API):
             endpoint,
             data={'service_id': service_id},
             files={'urls': tf},
+            timeout=1800
         )
 
     def prepare(self, service_id, images_infos):
