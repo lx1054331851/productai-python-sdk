@@ -57,14 +57,14 @@ class Client(object):
         )
         return resp
 
-    def post(self, api_url, data=None, files=None):
+    def post(self, api_url, data=None, files=None, timeout=30):
         headers = self.get_headers(data)
         resp = self.session.post(
             api_url,
             data=data,
             headers=headers,
             files=files,
-            timeout=30,
+            timeout=timeout
         )
         return resp
 
@@ -188,6 +188,7 @@ class BatchAPI(API):
             endpoint,
             data={'service_id': service_id},
             files={'urls': tf},
+            timeout=1800
         )
 
     def prepare(self, service_id, images_infos):
