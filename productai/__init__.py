@@ -45,6 +45,10 @@ class Client(object):
         return ImageSetAPI(self, image_set_id)
 
     def get_color_analysis_api(self, sub_type):
+        """
+        :param sub_type: 分析类型，everything 全图颜色、foreground 前景颜色 或 person_outfit 人物服饰颜色
+        :return:
+        """
         return ColorAnalysisAPI(self, sub_type)
 
     def get(self, api_url, **kwargs):
@@ -148,6 +152,13 @@ class ColorAnalysisAPI(API):
         self.sub_type = sub_type
 
     def query(self, image, granularity, return_type, loc='0-0-1-1'):
+         """
+        :param image: 图片url
+        :param granularity: 分析粒度，major 主要颜色、detailed 所有颜色 或 dominant 最显著单色
+        :param return_type:  返回颜色类型，basic、w3c、ncs 或 cncs
+        :param loc: 可选，默认为整张图片。用于搜索的图片区域，格式为 [x, y, w, h]
+        :return:
+        """
         if granularity not in self.GRANULARITIES:
             raise TypeError(
                 "%r is not one of the valid granularities: %r" %
